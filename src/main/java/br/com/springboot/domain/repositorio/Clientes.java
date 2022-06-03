@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -13,24 +16,49 @@ import java.util.List;
 // @Repository determina que a classe faz acesso a banco de dados
 @Repository
 public class Clientes {
-    private static String INSERT = "insert into cliente (nome) values (?)";
-    private static String SELECT_ALL = "select * from CLIENTE ";
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
+    //Interface que faz todos as operações da base
+    @Autowired
+    private EntityManager entityManager;
+
+    @Transactional
     public Cliente salvar(Cliente cliente) {
-        jdbcTemplate.update(INSERT, new Object[]{cliente.getNome()});
+        entityManager.persist(cliente);
         return cliente;
     }
 
-    public List<Cliente> obterTodos(){
-        return  jdbcTemplate.query(SELECT_ALL, new RowMapper<Cliente>() {
-            @Override
-            public Cliente mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Integer id = rs.getInt("id");
-                String nome =   rs.getString("nome");
-                return  new Cliente(id,nome);
-            }
-        });
+    @Transactional
+    public Cliente atualizar(Cliente cliente) {
+        entityManager.merge(cliente);
+        return cliente;
     }
+
+    @Transactional
+    public Cliente deletar(Cliente cliente) {
+        if (!entityManager.contains(cliente)) {
+            cliente = entityManager.merge(cliente);
+        }
+        entityManager.remove(cliente);
+        return cliente;
+    }
+
+    @Transactional
+    public void deletar(Integer id) {
+        Cliente cliente = entityManager.find(Cliente.class, id);
+        deletar(cliente);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Cliente> buscarPorNome(String nome) {
+        String jpql = "Select c from Cliente c where c.nome = :nome ";
+        TypedQuery<Cliente> query = entityManager.createQuery(jpql, Cliente.class);
+        query.setParameter("nome", "%"+nome+"%");
+        return query.getResultList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Cliente> obterTodos() {
+        return entityManager.createQuery("from Cliente", Cliente.class).getResultList();
+    }
+
 }

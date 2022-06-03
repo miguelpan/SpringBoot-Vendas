@@ -1,8 +1,18 @@
 package br.com.springboot.domain.entity;
+
+import javax.persistence.*;
+
 //Classe de dominio
 
+@Entity
+@Table(name = "cliente") // Só é preciso colocar se o nome da classe for diferente do nome da tabela
 public class Cliente {
+    @Id //obrigatorio ter
+    @GeneratedValue(strategy = GenerationType.AUTO)
+
+    @Column(name = "id")
     private Integer id;
+    @Column(name = "nome", length = 100)
     private String nome;
 
     public Cliente() {
