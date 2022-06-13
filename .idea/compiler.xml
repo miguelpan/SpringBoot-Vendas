@@ -8,11 +8,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="springboot" />
+        <module name="API-RESTFUL-VENDAol" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="API-RESTFUL-VENDAol" options="-parameters" />
       <module name="springboot" options="-parameters" />
     </option>
   </component>

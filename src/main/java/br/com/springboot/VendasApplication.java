@@ -23,6 +23,7 @@ public class VendasApplication {
             List<Cliente> todosClientes = clientes.findAll();
             todosClientes.forEach(System.out::println);
 
+            
         };
     }
 

@@ -16,7 +16,7 @@ public class ItemPedido {
     @ManyToOne
     @JoinColumn(name = "produto_id")
     private Produto produto;
-    @Column(name = "id")
+    @Column(name = "quantidade")
     private BigDecimal quantidade;
 
     public Integer getId() {
